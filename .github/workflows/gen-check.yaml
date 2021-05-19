@@ -10,8 +10,6 @@ jobs:
         with:
           submodules: true
       - name: Generate
-        run: |
-          git
-          make clean protobuf
+        run: make clean protobuf
       - name: Check Clean Work Tree
         run: make check-clean-work-tree
