@@ -9,7 +9,7 @@ jobs:
         with:
           submodules: true
       - name: Generate
-        run: -
+        run: |
           git
           make clean protobuf
       - name: Check Clean Work Tree
