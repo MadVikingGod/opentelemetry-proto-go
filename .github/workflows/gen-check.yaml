@@ -1,0 +1,16 @@
+name: Clean Generation
+on:
+  pull_request:
+jobs:
+  generate-and-check:
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Generate
+        run: -
+          git
+          make clean protobuf
+      - name: Check Clean Work Tree
+        run: make check-clean-work-tree
