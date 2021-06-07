@@ -41,6 +41,7 @@ PROTO_SOURCE_DIR   := $(GEN_TEMP_DIR)/proto
 SOURCE_PROTO_FILES := $(subst $(OTEL_PROTO_SUBMODULE),$(PROTO_SOURCE_DIR),$(SUBMODULE_PROTO_FILES))
 GO_MOD_ROOT		   := go.opentelemetry.io/proto
 OTLP_OUTPUT_DIR    := otlp
+GO_VERSION         := 1.14
 
 # Function to execute a command. Note the empty line before endef to make sure each command
 # gets executed separately instead of concatenated with previous one.
@@ -90,8 +91,18 @@ copy-otlp-protobuf:
 	mkdir -p ./$(OTLP_OUTPUT_DIR)
 	@rsync -a $(PROTOBUF_TEMP_DIR)/go.opentelemetry.io/proto/otlp/ ./$(OTLP_OUTPUT_DIR)
 	cd ./$(OTLP_OUTPUT_DIR) && go mod init $(GO_MOD_ROOT)/$(OTLP_OUTPUT_DIR)
-	@cd ./$(OTLP_OUTPUT_DIR) && go get ./...
+	@cd ./$(OTLP_OUTPUT_DIR) && go mod edit -go=$(GO_VERSION) && go get ./...
 
 .PHONY: clean
 clean:
 	rm -rf $(GEN_TEMP_DIR) $(OTLP_OUTPUT_DIR)
+
+.PHONY: check-clean-work-tree
+check-clean-work-tree:
+	@if ! git diff --quiet; then \
+	  echo; \
+	  echo 'Working tree is not clean, did you forget to run "make protobuf"?'; \
+	  echo; \
+	  git status; \
+	  exit 1; \
+	fi
